@@ -1,0 +1,9 @@
+{
+  "extends": "airbnb",
+  "globals": {
+    "Phaser": false
+  },
+  "settings": {
+    "import/resolver": "webpack"  # take all defaults
+  }
+}
