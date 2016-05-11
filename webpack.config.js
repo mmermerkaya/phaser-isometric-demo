@@ -1,7 +1,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: `${__dirname}/src/index.js`,
+  entry: `${__dirname}/src/main.js`,
   output: {
     path: `${__dirname}/build/`,
     filename: 'bundle.js',
@@ -32,7 +33,12 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'src/index.html',
+      template: 'src/assets/index.html',
     }),
+    new CopyWebpackPlugin([{
+      from: 'src/vendor',
+      to: 'vendor',
+    }]),
   ],
+  watch: true,
 };
