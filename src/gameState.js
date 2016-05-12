@@ -1,7 +1,14 @@
-import tilesetImage from 'assets/tileset.png';
-import tilesetData from 'assets/tileset.json';
+import tilesetImage from 'assets/sprites/tileset.png';
+import tilesetData from 'assets/sprites/tileset.json';
+import charImage from 'assets/sprites/char.png';
+import charData from 'assets/sprites/char.json';
 import EasyStar from 'easystarjs';
-import { map, direction } from 'map';
+import { map, direction, tileNames } from 'map';
+
+const startPosition = {
+  x: 0,
+  y: 1,
+};
 
 class State extends Phaser.State {
   preload() {
@@ -12,6 +19,7 @@ class State extends Phaser.State {
     this.game.plugins.add(new Phaser.Plugin.Isometric(this.game));
 
     this.game.load.atlasJSONHash('tileset', tilesetImage, null, tilesetData);
+    this.game.load.atlasJSONHash('char', charImage, null, charData);
 
     this.game.iso.anchor.setTo(0.3, 0.1);
   }
@@ -24,30 +32,16 @@ class State extends Phaser.State {
     this.size = 36;
     this.finding = false;
 
-    const tileArray = [];
-    tileArray[0] = 'water';
-    tileArray[1] = 'sand';
-    tileArray[2] = 'grass';
-    tileArray[3] = 'stone';
-    tileArray[4] = 'wood';
-    tileArray[5] = 'watersand';
-    tileArray[6] = 'grasssand';
-    tileArray[7] = 'sandstone';
-    tileArray[8] = 'bush1';
-    tileArray[9] = 'bush2';
-    tileArray[10] = 'mushroom';
-    tileArray[11] = 'wall';
-    tileArray[12] = 'window';
-
     this.easystar.setGrid(map);
     this.easystar.setAcceptableTiles([1, 2, 3, 4, 5, 6, 7]);
-    this.easystar.enableDiagonals();
-    this.easystar.disableCornerCutting();
+    // this.easystar.enableDiagonals();
+    // this.easystar.disableCornerCutting();
 
+    // Generate tiles
     for (let y = 0; y < map.length; y++) {
       for (let x = 0; x < map[y].length; x++) {
         const tile = this.game.add.isoSprite(this.size * x, this.size * y, 0,
-          'tileset', tileArray[map[y][x]], this.isoGroup);
+          'tileset', tileNames[map[y][x]], this.isoGroup);
         tile.scale.x = direction[y][x];
 
         // Anchor is bottom middle
@@ -60,7 +54,7 @@ class State extends Phaser.State {
           tile.initialZ += 4;
 
           const waterUnderBridge = this.game.add.isoSprite(this.size * x, this.size * y, 0,
-            'tileset', tileArray[0], this.isoGroup);
+            'tileset', tileNames[0], this.isoGroup);
           waterUnderBridge.anchor.set(0.5, 1);
           waterUnderBridge.initialZ = -2;
           this.water.push(waterUnderBridge);
@@ -73,7 +67,28 @@ class State extends Phaser.State {
       }
     }
 
-    this.game.iso.simpleSort(this.isoGroup);
+    // Create dude
+    this.dude = this.game.add
+      .isoSprite(this.size * (startPosition.x - 0.5), this.size * (startPosition.y - 0.5), 0,
+      'char', 'greenhood_idle_front_right.png');
+    this.dude.anchor.set(0.5, 1);
+
+    // Create dude's animations
+    const backRightFrames =
+      Phaser.Animation.generateFrameNames('greenhood_walk_back_right_', 1, 8, '.png');
+    this.dude.animations.add('walkBackRight', backRightFrames, 12, true, false);
+
+    const backLeftFrames =
+      Phaser.Animation.generateFrameNames('greenhood_walk_back_left_', 1, 8, '.png');
+    this.dude.animations.add('walkBackLeft', backLeftFrames, 12, true, false);
+
+    const frontRightFrames =
+      Phaser.Animation.generateFrameNames('greenhood_walk_front_right_', 1, 8, '.png');
+    this.dude.animations.add('walkFrontRight', frontRightFrames, 12, true, false);
+
+    const frontLeftFrames =
+      Phaser.Animation.generateFrameNames('greenhood_walk_front_left_', 1, 8, '.png');
+    this.dude.animations.add('walkFrontLeft', frontLeftFrames, 12, true, false);
   }
 
   update() {
@@ -118,7 +133,8 @@ class State extends Phaser.State {
       if (!this.finding && this.game.input.activePointer.isDown && inBounds) {
         // Start path finding
         this.finding = true;
-        this.easystar.findPath(5, 10, x, y, this.processPath.bind(this));
+        const dp = this.dudePosition();
+        this.easystar.findPath(dp.x, dp.y, x, y, this.processPath.bind(this));
         this.easystar.calculate();
       }
     });
@@ -131,6 +147,12 @@ class State extends Phaser.State {
         + (-1 * Math.sin((this.game.time.now + (waterTile.isoY * 8)) * 0.005));
       waterTile.alpha = Phaser.Math.clamp(1 + (waterTile.isoZ * 0.1), 0.2, 1);
     });
+
+    if (this.isMoving) {
+      this.move();
+    }
+
+    this.game.iso.simpleSort(this.isoGroup);
   }
 
   render() {
@@ -139,9 +161,19 @@ class State extends Phaser.State {
 
   processPath(path) {
     this.finding = false;
-    if (!path) {
+    if (!path || path.length === 0) {
       return;
     }
+
+    // Keep moving if already moving towards same direction;
+    if (this.isMoving && this.pathIndex < this.path.length && path.length > 1
+        && this.path[this.pathIndex].x === path[1].x && this.path[this.pathIndex].y === path[1].y) {
+      this.pathIndex = 1;
+    } else {
+      this.pathIndex = 0;
+    }
+
+    this.isMoving = true;
 
     // Loop tiles
     this.isoGroup.forEach(t => {
@@ -161,6 +193,42 @@ class State extends Phaser.State {
       }
     });
     this.path = path;
+  }
+
+  dudePosition() {
+    return {
+      x: Math.round(this.dude.isoX / this.size + 0.5),
+      y: Math.round(this.dude.isoY / this.size + 0.5),
+    };
+  }
+
+  move() {
+    if (!this.path || this.pathIndex === this.path.length) {
+      // No path or finished moving
+      this.isMoving = false;
+      this.path = null;
+      this.dude.animations.stop();
+      return;
+    }
+    const target = this.path[this.pathIndex];
+    const x = (this.dude.isoX + this.size / 2) - (target.x * this.size);
+    const y = (this.dude.isoY + this.size / 2) - (target.y * this.size);
+    if (x === 0 && y === 0) {
+      // Reached next tile
+      this.pathIndex++;
+    } else if (x < 0 && y === 0) {
+      this.dude.isoX++;
+      this.dude.animations.play('walkFrontLeft');
+    } else if (x > 0 && y === 0) {
+      this.dude.isoX--;
+      this.dude.animations.play('walkBackLeft');
+    } else if (x === 0 && y < 0) {
+      this.dude.isoY++;
+      this.dude.animations.play('walkFrontRight');
+    } else if (x === 0 && y > 0) {
+      this.dude.isoY--;
+      this.dude.animations.play('walkBackRight');
+    }
   }
 }
 

@@ -26,4 +26,19 @@ export const direction = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-export default { map, direction };
+export const tileNames = [];
+tileNames[0] = 'water';
+tileNames[1] = 'sand';
+tileNames[2] = 'grass';
+tileNames[3] = 'stone';
+tileNames[4] = 'wood';
+tileNames[5] = 'watersand';
+tileNames[6] = 'grasssand';
+tileNames[7] = 'sandstone';
+tileNames[8] = 'bush1';
+tileNames[9] = 'bush2';
+tileNames[10] = 'mushroom';
+tileNames[11] = 'wall';
+tileNames[12] = 'window';
+
+export default { map, direction, tileNames };
