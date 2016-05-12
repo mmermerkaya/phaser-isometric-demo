@@ -58,21 +58,28 @@ class State extends Phaser.State {
 
         // Anchor is bottom middle
         tile.anchor.set(0.5, 1);
+        tile.initialZ = 0;
 
         if (tiles[y][x] === 4) {
           // Make bridge higher
-          tile.isoZ += 6;
+          tile.isoZ += 4;
+          tile.initialZ += 4;
+
+          const waterUnderBridge = this.game.add.isoSprite(size * x, size * y, 0,
+            'tileset', tileArray[0], this.isoGroup);
+          waterUnderBridge.anchor.set(0.5, 1);
+          waterUnderBridge.initialZ = -2;
+          this.water.push(waterUnderBridge);
         }
-        // if (tiles[y][x] <= 10 && (tiles[y][x] < 5 || tiles[y][x] > 6)) {
-        //   // Randomize direction
-        //   tile.scale.x = this.game.rnd.pick([-1, 1]);
-        // }
         if (tiles[y][x] === 0) {
+          tile.initialZ = -2;
           // Add to water tiles
           this.water.push(tile);
         }
       }
     }
+
+    this.game.iso.simpleSort(this.isoGroup);
   }
 
   update() {
@@ -91,26 +98,30 @@ class State extends Phaser.State {
       const tile = t;
       const inBounds = tile.isoBounds.containsXY(this.cursorPos.x, this.cursorPos.y);
 
-      if (!tile.selected && inBounds) {
+      if (!tile.selected && inBounds && !this.water.includes(tile)) {
         // If it does, do a little animation and tint change.
         tile.selected = true;
         tile.tint = 0x86bfda;
-        this.game.add.tween(tile).to({ isoZ: 4 }, 200, Phaser.Easing.Quadratic.InOut, true);
+        this.game.add
+          .tween(tile)
+          .to({ isoZ: tile.initialZ + 6 }, 200, Phaser.Easing.Quadratic.InOut, true);
       } else if (tile.selected && !inBounds) {
         // If not, revert back to how it was.
         tile.selected = false;
         tile.tint = 0xffffff;
-        this.game.add.tween(tile).to({ isoZ: 0 }, 200, Phaser.Easing.Quadratic.InOut, true);
+        this.game.add
+          .tween(tile)
+          .to({ isoZ: tile.initialZ + 0 }, 200, Phaser.Easing.Quadratic.InOut, true);
       }
     });
 
     this.water.forEach(w => {
       const waterTile = w;
       waterTile.isoZ =
+        waterTile.initialZ +
         (-2 * Math.sin((this.game.time.now + (waterTile.isoX * 7)) * 0.004))
-        + (-1 * Math.sin((this.game.time.now + (waterTile.isoY * 8)) * 0.005))
-        - 2;
-      waterTile.alpha = Phaser.Math.clamp(1 + (w.isoZ * 0.1), 0.2, 1);
+        + (-1 * Math.sin((this.game.time.now + (waterTile.isoY * 8)) * 0.005));
+      waterTile.alpha = Phaser.Math.clamp(1 + (waterTile.isoZ * 0.1), 0.2, 1);
     });
   }
 

@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import GameState from 'gameState';
 
 class Game extends Phaser.Game {
