@@ -1,7 +1,7 @@
 import tilesetImage from 'assets/tileset.png';
 import tilesetData from 'assets/tileset.json';
 import EasyStar from 'easystarjs';
-import map from 'map';
+import { map, direction } from 'map';
 
 class State extends Phaser.State {
   preload() {
@@ -41,11 +41,14 @@ class State extends Phaser.State {
 
     this.easystar.setGrid(map);
     this.easystar.setAcceptableTiles([1, 2, 3, 4, 5, 6, 7]);
+    this.easystar.enableDiagonals();
+    this.easystar.disableCornerCutting();
 
     for (let y = 0; y < map.length; y++) {
       for (let x = 0; x < map[y].length; x++) {
         const tile = this.game.add.isoSprite(this.size * x, this.size * y, 0,
           'tileset', tileArray[map[y][x]], this.isoGroup);
+        tile.scale.x = direction[y][x];
 
         // Anchor is bottom middle
         tile.anchor.set(0.5, 1);
@@ -100,7 +103,7 @@ class State extends Phaser.State {
         }
         this.game.add
           .tween(tile)
-          .to({ isoZ: tile.initialZ + 6 }, 200, Phaser.Easing.Quadratic.InOut, true);
+          .to({ isoZ: tile.initialZ + 4 }, 200, Phaser.Easing.Quadratic.InOut, true);
       } else if (tile.selected && !inBounds) {
         // If not, revert back to how it was.
         tile.selected = false;
