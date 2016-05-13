@@ -6,23 +6,23 @@
     "test": "eslint --ext=js src"
   },
   "dependencies": {
-    "easystarjs": "^0.2.3"
+    "easystarjs": "0.2.3"
   },
   "devDependencies": {
-    "babel-core": "^6.8.0",
-    "babel-loader": "^6.2.4",
-    "babel-polyfill": "^6.8.0",
-    "babel-preset-es2015": "^6.6.0",
-    "copy-webpack-plugin": "^2.1.3",
-    "eslint": "^2.9.0",
-    "eslint-config-airbnb": "^9.0.1",
-    "eslint-import-resolver-webpack": "^0.2.4",
-    "eslint-plugin-import": "^1.7.0",
-    "eslint-plugin-jsx-a11y": "^1.2.0",
-    "eslint-plugin-react": "^5.1.1",
-    "file-loader": "^0.8.5",
-    "html-webpack-plugin": "^2.16.1",
-    "json-loader": "^0.5.4",
-    "webpack": "^1.13.0"
+    "babel-core": "6.8.0",
+    "babel-loader": "6.2.4",
+    "babel-polyfill": "6.8.0",
+    "babel-preset-es2015": "6.6.0",
+    "copy-webpack-plugin": "2.1.3",
+    "eslint": "2.9.0",
+    "eslint-config-airbnb": "9.0.1",
+    "eslint-import-resolver-webpack": "0.2.4",
+    "eslint-plugin-import": "1.7.0",
+    "eslint-plugin-jsx-a11y": "1.2.0",
+    "eslint-plugin-react": "5.1.1",
+    "file-loader": "0.8.5",
+    "html-webpack-plugin": "2.16.1",
+    "json-loader": "0.5.4",
+    "webpack": "1.13.0"
   }
 }
