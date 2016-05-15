@@ -41,5 +41,4 @@ module.exports = {
       to: 'vendor',
     }]),
   ],
-  watch: true,
 };
