@@ -10,3 +10,7 @@ class Game extends Phaser.Game {
 const game = new Game();
 game.state.add('GameState', GameState, false);
 game.state.start('GameState');
+
+document.body.oncontextmenu = function preventRightClick(e) {
+  e.preventDefault();
+};
