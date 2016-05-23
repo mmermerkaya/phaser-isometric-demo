@@ -7,7 +7,7 @@
     "test": "eslint --ext=js src"
   },
   "dependencies": {
-    "easystarjs": "^0.2.3"
+    "easystarjs": "^0.3.0"
   },
   "devDependencies": {
     "babel-core": "^6.8.0",
