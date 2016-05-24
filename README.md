@@ -4,7 +4,7 @@
 [![Dependency Status](https://david-dm.org/mmermerkaya/phaser-isometric-demo.svg)](https://david-dm.org/mmermerkaya/phaser-isometric-demo)
 [![devDependency Status](https://david-dm.org/mmermerkaya/phaser-isometric-demo/dev-status.svg)](https://david-dm.org/mmermerkaya/phaser-isometric-demo#info=devDependencies)
 
-A demo using [Phaser](http://phaser.io/) and [Phaser Isometric Plugin](rotates.org/phaser/iso/).
+A demo using [Phaser](http://phaser.io/) and [Phaser Isometric Plugin](http://rotates.org/phaser/iso/).
 
 [Click here](https://mmermerkaya.github.io/phaser-isometric-demo/) to see it in action.
 
