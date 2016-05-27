@@ -3,7 +3,7 @@ import tilesetData from 'assets/sprites/tileset.json';
 import charImage from 'assets/sprites/char.png';
 import charData from 'assets/sprites/char.json';
 import EasyStar from 'easystarjs';
-import { map, direction, tileNames } from 'map';
+import Level from 'map';
 import Dude from 'dude';
 
 class State extends Phaser.State {
@@ -32,49 +32,61 @@ class State extends Phaser.State {
   }
 
   create() {
-    this.isoGroup = this.game.add.group();
+    this.groundGroup = this.game.add.group();
+    this.objectGroup = this.game.add.group();
     this.water = [];
     this.cursorPos = new Phaser.Plugin.Isometric.Point3();
     this.easystar = new EasyStar.js(); // eslint-disable-line new-cap
     this.finding = false;
 
-    this.easystar.setGrid(map);
-    this.easystar.setAcceptableTiles([1, 2, 3, 4, 5, 6, 7]);
+    this.easystar.setGrid(Level.map);
+    this.easystar.setAcceptableTiles(Level.groundTiles);
     // this.easystar.enableDiagonals();
     // this.easystar.disableCornerCutting();
 
     // Generate tiles
-    for (let y = 0; y < map.length; y++) {
-      for (let x = 0; x < map[y].length; x++) {
+    for (let y = 0; y < Level.map.length; y++) {
+      for (let x = 0; x < Level.map[y].length; x++) {
         const tile = this.game.add.isoSprite(this.size * x, this.size * y, 0,
-          'tileset', tileNames[map[y][x]], this.isoGroup);
-        tile.scale.x = direction[y][x];
+          'tileset', Level.tileNames[Level.map[y][x]]);
+        tile.scale.x = Level.direction[y][x];
 
         // Anchor is bottom middle
         tile.anchor.set(0.5, 1);
         tile.initialZ = 0;
 
-        if (map[y][x] === 4) {
+        // Add tile to group
+        if (Level.map[y][x] === 0) {
+          tile.initialZ = -2;
+          // Add to water tiles
+          this.groundGroup.add(tile);
+          this.water.push(tile);
+        } else if (Level.groundTiles.includes(Level.map[y][x])) {
+          this.groundGroup.add(tile);
+        } else {
+          this.objectGroup.add(tile);
+        }
+
+        if (Level.map[y][x] === 4) {
           // Make bridge higher
           tile.isoZ += 4;
           tile.initialZ += 4;
 
+          // Put tile under bridge
           const waterUnderBridge = this.game.add.isoSprite(this.size * x, this.size * y, 0,
-            'tileset', tileNames[0], this.isoGroup);
+            'tileset', Level.tileNames[0], this.groundGroup);
           waterUnderBridge.anchor.set(0.5, 1);
           waterUnderBridge.initialZ = -2;
           this.water.push(waterUnderBridge);
         }
-        if (map[y][x] === 0) {
-          tile.initialZ = -2;
-          // Add to water tiles
-          this.water.push(tile);
-        }
       }
     }
 
+    this.game.iso.simpleSort(this.groundGroup);
+
     // Create dude
     this.dude = new Dude(this.game, this.startPosition);
+    this.objectGroup.add(this.dude.sprite);
   }
 
   update() {
@@ -88,7 +100,7 @@ class State extends Phaser.State {
     this.game.iso.unproject(this.game.input.activePointer.position, this.cursorPos);
 
     // Loop through all tiles
-    this.isoGroup.forEach(t => {
+    this.groundGroup.forEach(t => {
       const tile = t;
       const x = tile.isoX / this.size;
       const y = tile.isoY / this.size;
@@ -138,7 +150,7 @@ class State extends Phaser.State {
       this.move();
     }
 
-    this.game.iso.simpleSort(this.isoGroup);
+    this.game.iso.simpleSort(this.objectGroup);
   }
 
   render() {
@@ -162,7 +174,7 @@ class State extends Phaser.State {
     this.isMoving = true;
 
     // Loop tiles
-    this.isoGroup.forEach(t => {
+    this.groundGroup.forEach(t => {
       const tile = t;
       if (tile.inPath) {
         // Clear tint from previous path

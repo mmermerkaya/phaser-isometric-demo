@@ -41,4 +41,6 @@ tileNames[10] = 'mushroom';
 tileNames[11] = 'wall';
 tileNames[12] = 'window';
 
-export default { map, direction, tileNames };
+export const groundTiles = [1, 2, 3, 4, 5, 6, 7];
+
+export default { map, direction, tileNames, groundTiles };
