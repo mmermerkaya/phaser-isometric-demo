@@ -2,6 +2,8 @@ import tilesetImage from 'assets/sprites/tileset.png';
 import tilesetData from 'assets/sprites/tileset.json';
 import charImage from 'assets/sprites/char.png';
 import charData from 'assets/sprites/char.json';
+import objectImage from 'assets/sprites/object.png';
+import objectData from 'assets/sprites/object.json';
 import EasyStar from 'easystarjs';
 import Level from 'map';
 import Dude from 'dude';
@@ -27,6 +29,7 @@ class State extends Phaser.State {
 
     this.game.load.atlasJSONHash('tileset', tilesetImage, null, tilesetData);
     this.game.load.atlasJSONHash('char', charImage, null, charData);
+    this.game.load.atlasJSONHash('object', objectImage, null, objectData);
 
     this.game.iso.anchor.setTo(0.3, 0.1);
   }
@@ -39,46 +42,56 @@ class State extends Phaser.State {
     this.easystar = new EasyStar.js(); // eslint-disable-line new-cap
     this.finding = false;
 
-    this.easystar.setGrid(Level.map);
-    this.easystar.setAcceptableTiles(Level.groundTiles);
+    this.easystar.setGrid(Level.walkable);
+    this.easystar.setAcceptableTiles([1]);
     // this.easystar.enableDiagonals();
     // this.easystar.disableCornerCutting();
 
-    // Generate tiles
-    for (let y = 0; y < Level.map.length; y++) {
-      for (let x = 0; x < Level.map[y].length; x++) {
+    // Generate ground
+    for (let y = 0; y < Level.ground.length; y++) {
+      for (let x = 0; x < Level.ground[y].length; x++) {
         const tile = this.game.add.isoSprite(this.size * x, this.size * y, 0,
-          'tileset', Level.tileNames[Level.map[y][x]]);
-        tile.scale.x = Level.direction[y][x];
+          'tileset', Level.groundNames[Level.ground[y][x]], this.groundGroup);
 
         // Anchor is bottom middle
-        tile.anchor.set(0.5, 1);
+        tile.anchor.set(0.5, 1 - ((tile.height - (tile.width / 2)) / tile.height));
+        tile.scale.x = Level.direction[y][x];
         tile.initialZ = 0;
 
-        // Add tile to group
-        if (Level.map[y][x] === 0) {
-          tile.initialZ = -2;
+        if (Level.ground[y][x] === 0) {
           // Add to water tiles
-          this.groundGroup.add(tile);
+          tile.initialZ = -4;
           this.water.push(tile);
-        } else if (Level.groundTiles.includes(Level.map[y][x])) {
-          this.groundGroup.add(tile);
-        } else {
-          this.objectGroup.add(tile);
         }
 
-        if (Level.map[y][x] === 4) {
+        if (Level.ground[y][x] === 4) {
           // Make bridge higher
           tile.isoZ += 4;
           tile.initialZ += 4;
 
           // Put tile under bridge
           const waterUnderBridge = this.game.add.isoSprite(this.size * x, this.size * y, 0,
-            'tileset', Level.tileNames[0], this.groundGroup);
+            'tileset', Level.groundNames[0], this.groundGroup);
           waterUnderBridge.anchor.set(0.5, 1);
-          waterUnderBridge.initialZ = -2;
+          waterUnderBridge.initialZ = -4;
           this.water.push(waterUnderBridge);
         }
+      }
+    }
+
+    // Generate objects
+    for (let y = 0; y < Level.object.length; y++) {
+      for (let x = 0; x < Level.object[y].length; x++) {
+        if (Level.object[y][x] === 0) {
+          continue;
+        }
+
+        const tile = this.game.add.isoSprite(this.size * x, this.size * y, 0,
+          'object', Level.objectNames[Level.object[y][x]], this.objectGroup);
+
+        // Anchor is bottom middle
+        tile.anchor.set(0.5, 1);
+        tile.initialZ = 0;
       }
     }
 

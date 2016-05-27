@@ -14,9 +14,6 @@ module.exports = {
         test: /\.jsx?$/,
         include: /src/,
         loader: 'babel',
-        query: {
-          presets: ['es2015'],
-        },
       }, {
         test: /\.json$/,
         include: /src/,
