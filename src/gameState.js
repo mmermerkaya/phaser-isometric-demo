@@ -15,8 +15,8 @@ class State extends Phaser.State {
 
   get startPosition() {
     return {
-      x: this.size * (0 - 0.5),
-      y: this.size * (1 - 0.5),
+      x: this.size * (11 - 0.5),
+      y: this.size * (11 - 0.5),
     };
   }
 
@@ -31,7 +31,8 @@ class State extends Phaser.State {
     this.game.load.atlasJSONHash('char', charImage, null, charData);
     this.game.load.atlasJSONHash('object', objectImage, null, objectData);
 
-    this.game.iso.anchor.setTo(0.3, 0.1);
+    this.game.world.setBounds(0, 0, 2048, 2048);
+    this.game.iso.anchor.setTo(0.5, 0.5);
   }
 
   create() {
@@ -100,6 +101,7 @@ class State extends Phaser.State {
     // Create dude
     this.dude = new Dude(this.game, this.startPosition);
     this.objectGroup.add(this.dude.sprite);
+    this.game.camera.follow(this.dude.sprite);
   }
 
   update() {
@@ -168,6 +170,7 @@ class State extends Phaser.State {
 
   render() {
     this.game.debug.text(this.game.time.fps || '--', 2, 14, '#a7aebe');
+    this.game.debug.cameraInfo(this.game.camera, 2, 32, '#a7aebe');
   }
 
   processPath(path) {
