@@ -5,5 +5,8 @@
   },
   "settings": {
     "import/resolver": "webpack"  # take all defaults
+  },
+  "env": {
+    "browser": true
   }
 }

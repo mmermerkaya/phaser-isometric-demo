@@ -1,4 +1,4 @@
-export const ground = [
+const ground = [
   [2, 2, 1, 1, 4, 4, 1, 6, 2, 2, 2, 2, 2, 2, 1, 1, 4, 4, 1, 6, 2, 2, 2],
   [2, 6, 1, 0, 4, 4, 0, 0, 2, 2, 2, 2, 2, 6, 1, 0, 4, 4, 0, 0, 2, 2, 2],
   [6, 1, 0, 0, 4, 4, 0, 0, 2, 2, 2, 2, 6, 1, 0, 0, 4, 4, 0, 0, 2, 2, 2],
@@ -23,7 +23,7 @@ export const ground = [
   [7, 1, 7, 7, 3, 3, 7, 7, 1, 1, 7, 1, 7, 1, 7, 7, 3, 3, 7, 7, 1, 1, 7],
 ];
 
-export const groundNames = [];
+const groundNames = [];
 groundNames[0] = 'water';
 groundNames[1] = 'sand';
 groundNames[2] = 'grass';
@@ -38,7 +38,7 @@ groundNames[10] = 'mushroom';
 groundNames[11] = 'wall';
 groundNames[12] = 'window';
 
-export const object = [
+const object = [
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0],
@@ -63,7 +63,7 @@ export const object = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
-export const objectNames = [];
+const objectNames = [];
 objectNames[0] = '';
 objectNames[1] = 'bush_2';
 objectNames[2] = 'bush_3';
@@ -71,7 +71,7 @@ objectNames[3] = 'bush_5';
 objectNames[4] = 'oak3';
 objectNames[5] = 'oak2';
 
-export const direction = [
+const direction = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -96,7 +96,7 @@ export const direction = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-export const walkable = [
+const walkable = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1],
   [1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1],

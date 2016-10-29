@@ -9,14 +9,14 @@ import Level from 'map';
 import Dude from 'dude';
 
 class State extends Phaser.State {
-  get size() {
+  static get size() {
     return 36;
   }
 
-  get startPosition() {
+  static get startPosition() {
     return {
-      x: this.size * (11 - 0.5),
-      y: this.size * (11 - 0.5),
+      x: State.size * (11 - 0.5),
+      y: State.size * (11 - 0.5),
     };
   }
 
@@ -49,9 +49,9 @@ class State extends Phaser.State {
     // this.easystar.disableCornerCutting();
 
     // Generate ground
-    for (let y = 0; y < Level.ground.length; y++) {
-      for (let x = 0; x < Level.ground[y].length; x++) {
-        const tile = this.game.add.isoSprite(this.size * x, this.size * y, 0,
+    for (let y = 0; y < Level.ground.length; y += 1) {
+      for (let x = 0; x < Level.ground[y].length; x += 1) {
+        const tile = this.game.add.isoSprite(State.size * x, State.size * y, 0,
           'tileset', Level.groundNames[Level.ground[y][x]], this.groundGroup);
 
         // Anchor is bottom middle
@@ -71,7 +71,7 @@ class State extends Phaser.State {
           tile.initialZ += 4;
 
           // Put tile under bridge
-          const waterUnderBridge = this.game.add.isoSprite(this.size * x, this.size * y, 0,
+          const waterUnderBridge = this.game.add.isoSprite(State.size * x, State.size * y, 0,
             'tileset', Level.groundNames[0], this.groundGroup);
           waterUnderBridge.anchor.set(0.5, 1);
           waterUnderBridge.initialZ = -4;
@@ -81,25 +81,23 @@ class State extends Phaser.State {
     }
 
     // Generate objects
-    for (let y = 0; y < Level.object.length; y++) {
-      for (let x = 0; x < Level.object[y].length; x++) {
-        if (Level.object[y][x] === 0) {
-          continue;
+    for (let y = 0; y < Level.object.length; y += 1) {
+      for (let x = 0; x < Level.object[y].length; x += 1) {
+        if (Level.object[y][x] !== 0) {
+          const tile = this.game.add.isoSprite(State.size * x, State.size * y, 0,
+            'object', Level.objectNames[Level.object[y][x]], this.objectGroup);
+
+          // Anchor is bottom middle
+          tile.anchor.set(0.5, 1);
+          tile.initialZ = 0;
         }
-
-        const tile = this.game.add.isoSprite(this.size * x, this.size * y, 0,
-          'object', Level.objectNames[Level.object[y][x]], this.objectGroup);
-
-        // Anchor is bottom middle
-        tile.anchor.set(0.5, 1);
-        tile.initialZ = 0;
       }
     }
 
     this.game.iso.simpleSort(this.groundGroup);
 
     // Create dude
-    this.dude = new Dude(this.game, this.startPosition);
+    this.dude = new Dude(this.game, State.startPosition);
     this.objectGroup.add(this.dude.sprite);
     this.game.camera.follow(this.dude.sprite);
   }
@@ -115,10 +113,10 @@ class State extends Phaser.State {
     this.game.iso.unproject(this.game.input.activePointer.position, this.cursorPos);
 
     // Loop through all tiles
-    this.groundGroup.forEach(t => {
+    this.groundGroup.forEach((t) => {
       const tile = t;
-      const x = tile.isoX / this.size;
-      const y = tile.isoY / this.size;
+      const x = tile.isoX / State.size;
+      const y = tile.isoY / State.size;
       const inBounds = tile.isoBounds.containsXY(this.cursorPos.x, this.cursorPos.y);
 
       // Test to see if the 3D position from above intersects
@@ -152,7 +150,7 @@ class State extends Phaser.State {
       }
     });
 
-    this.water.forEach(w => {
+    this.water.forEach((w) => {
       const waterTile = w;
       waterTile.isoZ =
         waterTile.initialZ +
@@ -190,14 +188,14 @@ class State extends Phaser.State {
     this.isMoving = true;
 
     // Loop tiles
-    this.groundGroup.forEach(t => {
+    this.groundGroup.forEach((t) => {
       const tile = t;
       if (tile.inPath) {
         // Clear tint from previous path
         tile.tint = 0xffffff;
       }
-      const x = tile.isoX / this.size;
-      const y = tile.isoY / this.size;
+      const x = tile.isoX / State.size;
+      const y = tile.isoY / State.size;
       const inPath = path.some(point => point.x === x && point.y === y);
       if (inPath) {
         tile.tint = 0xaa3333;
@@ -211,8 +209,8 @@ class State extends Phaser.State {
 
   dudePosition() {
     return {
-      x: Math.round(this.dude.x / this.size + 0.5),
-      y: Math.round(this.dude.y / this.size + 0.5),
+      x: Math.round((this.dude.x / State.size) + 0.5),
+      y: Math.round((this.dude.y / State.size) + 0.5),
     };
   }
 
@@ -225,22 +223,22 @@ class State extends Phaser.State {
       return;
     }
     const target = this.path[this.pathIndex];
-    const x = (this.dude.x + this.size / 2) - (target.x * this.size);
-    const y = (this.dude.y + this.size / 2) - (target.y * this.size);
+    const x = (this.dude.x + (State.size / 2)) - (target.x * State.size);
+    const y = (this.dude.y + (State.size / 2)) - (target.y * State.size);
     if (x === 0 && y === 0) {
       // Reached next tile
-      this.pathIndex++;
+      this.pathIndex += 1;
     } else if (x < 0 && y === 0) {
-      this.dude.x++;
+      this.dude.x += 1;
       this.dude.play('walkFrontLeft');
     } else if (x > 0 && y === 0) {
-      this.dude.x--;
+      this.dude.x -= 1;
       this.dude.play('walkBackLeft');
     } else if (x === 0 && y < 0) {
-      this.dude.y++;
+      this.dude.y += 1;
       this.dude.play('walkFrontRight');
     } else if (x === 0 && y > 0) {
-      this.dude.y--;
+      this.dude.y -= 1;
       this.dude.play('walkBackRight');
     }
   }
