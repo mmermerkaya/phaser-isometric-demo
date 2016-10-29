@@ -18,5 +18,6 @@ npm install
 
 ## Usage
 
-1. Run `npm start`
-2. On a different terminal, run `http-server build/`
+1. Run `npm start`.
+2. On a different terminal, run `http-server build/`.
+  * You need `http-server` package for this. Install with `npm install -g http-server`.
