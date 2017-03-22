@@ -13,7 +13,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         include: /src/,
-        loader: 'babel',
+        loader: 'babel-loader',
       }, {
         test: /\.json$/,
         include: /src/,
@@ -26,8 +26,8 @@ module.exports = {
     ],
   },
   resolve: {
-    root: path.join(__dirname, 'src'),
-    extensions: ['', '.js', '.jsx', '.css'],
+    modules: [path.join(__dirname, 'src'), 'node_modules'],
+    extensions: ['.js', '.jsx', '.css'],
   },
   plugins: [
     new HtmlWebpackPlugin({
